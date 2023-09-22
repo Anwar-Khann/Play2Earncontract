@@ -17,6 +17,7 @@ pragma solidity ^0.8.9;
 contract PotGame {
     uint256 public potFee = 1 ether;
     uint256 public partcipationFee = 200000000000000000 wei;
+    uint256 public rewardPerSecondPercent = 1;
     uint256 internal potId;
     // uint256[4] internal feePercentages = [55, 20, 20, 5];
 
@@ -30,7 +31,7 @@ contract PotGame {
         address creator;
         uint256 potBalance;
         participant[] participants;
-        address payable[5] lastPlayers;
+        address[] lastPlayers;
     }
 
     mapping(uint256 => Pot) public createdPots;
@@ -49,6 +50,7 @@ contract PotGame {
                 earnedReward: 0
             })
         );
+        pot.lastPlayers.push(msg.sender);
         potId++; //this line make sure that each pot has unique id
     }
 
@@ -86,14 +88,30 @@ contract PotGame {
         uint256 ownersCut = (localFee * 55) / 100;
         localFee -= ownersCut;
         payable(pot.creator).transfer(ownersCut);
-        uint256 teamPercent = localFee *5/100;
-        payable(0x78731D3Ca6b7E34aC0F824c42a7cC18A495cabaB).transfer(teamPercent);
+        uint256 teamPercent = (localFee * 5) / 100;
+        payable(0x78731D3Ca6b7E34aC0F824c42a7cC18A495cabaB).transfer(
+            teamPercent
+        );
         localFee -= teamPercent;
         //will test the flow of this below statement
-        pot.potBalance += localFee;//left percentAge will be added to the potBalance
+        pot.potBalance += localFee; //left percentAge will be added to the potBalance
         //now remiaining part is of last players reward distribution
         //calute the reward of player and distribution of it among last 5 user's
-
+        if (pot.participants.length > 5) {
+            participant storage lastPlayerIndex = pot.participants[
+                lengthToCompare - 5
+            ]; //THE FIRST PLAYER IN LAST 5
+            uint256 rewardOfLastPlayer = lastPlayerIndex.earnedReward; //HIS ALL SECOND'S THAT HE REMAINED PLAYER
+            uint256 toBeDistributed; //CARRIES THE WHOLE EARNED REWARD FOR PER SECOND
+            for (uint256 i; i < rewardOfLastPlayer; i++) {
+                uint256 nowThis = (pot.potBalance * rewardPerSecondPercent) /10000; // 10000 scaling factor for 0.001%
+                pot.potBalance -= nowThis; //exclude the calculated percentage for a second from potBalance and update the BALANCE OF POT
+                toBeDistributed += nowThis;
+                //AFTER CALCULATING THE WHOLE PERCENTAGE HERE THEN OUTSIDE OF LOOP WE WILL BEGIN DISTRIBUTING THE REWARD
+            }
+           
+            //now we will handle reward distribution
+        }
 
         // }
         // pot.potBalance += partcipationFee; //first handle fee distribution to other factor's also
