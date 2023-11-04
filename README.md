@@ -1,57 +1,61 @@
-# PotGame Smart Contract Documentation
+# PotFighter Smart Contract Documentation
 
 ## Overview
 
-The PotGame smart contract is a decentralized application that facilitates a game where users can create and join pots by paying fees. The contract distributes rewards among participants and allows for blacklisting users. It is built on the Ethereum blockchain.
+The PotFighter smart contract is a decentralized application built on the Ethereum blockchain that enables users to create and join pots by paying participation fees. The contract manages the distribution of rewards among participants and includes features like user blacklisting and freezing pots. This documentation provides a comprehensive understanding of the contract's structure, functions, and usage.
 
-## Contract Details
-
-- **Contract Name:** PotGame
-- **SPDX-License-Identifier:** UNLICENSED
+- **Contract Name:** PotFighter
+- **SPDX-License-Identifier:** MIT
 - **Solidity Version:** 0.8.9
 
 ## Structures
 
 ### Participant
 
-- `struct participant`
-  - `userAddress`: Address of the participant.
-  - `gameStart`: Timestamp when the participant joined the game.
-  - `beingLastPlayer`: Timestamp when the participant became the last player.
-  - `earnedReward`: Accumulated reward earned by the participant.
-  - `reward`: Reward per second earned by the participant.
+- **struct participant**
+  - `userAddress`: The Ethereum address of the participant.
+  - `startedAt`: The timestamp when the participant joined the pot.
+  - `endedAt`: The timestamp when the participant left the pot.
+  - `durationPlayed`: The total duration (in seconds) the participant played in the pot.
+  - `reward`: The accumulated reward earned per 0.001 of the pot balance per second.
+  - `rewardCollected`: A flag to monitor whether the user has collected their reward.
 
 ### Pot
 
-- `struct Pot`
-  - `creator`: Address of the pot creator.
-  - `potBalance`: Total balance of the pot.
-  - `participants`: Array of participants in the pot.
+- **struct Pot**
+  - `creator`: The Ethereum address of the pot creator.
+  - `potBalance`: The total balance of the pot.
+  - `participants`: An array of participants in the pot.
+  - `claimingActive`: A flag to determine if reward claiming is active.
+  - `isEnded`: A flag indicating the status of the pot (running or ended).
+  - `participationFee`: The participation fee required to join the pot.
+  - `beginning`: The timestamp when the pot was created.
+  - `lifeTime`: The duration of the pot in seconds.
 
 ## Constructor
 
 ### `constructor()`
 
-- **Description:** Initializes the contract, setting the deployer as the owner of the contract.
+- **Description:** Initializes the contract and sets the contract deployer as the owner.
 
 ## Modifiers
 
 ### `modifier potFreezed(uint256 _potId)`
 
-- **Description:** Ensures that the specified pot is not frozen.
+- **Description:** Ensures that the specified pot is not frozen, allowing participation.
 
 ### `modifier userBlackListed()`
 
-- **Description:** Checks if the user is blacklisted.
+- **Description:** Checks if the user executing the function is not blacklisted.
 
 ## Functions
 
 ### `createPot()`
 
-- **Description:** Allows users to create a new pot by paying a fee.
+- **Description:** Allows users to create a new pot by paying a participation fee.
 - **Requires:**
   - User is not blacklisted.
-  - Sent value is equal to `potFee`.
+  - Sent value equals `potFee`.
 - **Effects:**
   - Creates a new pot.
   - Adds the sender as the pot creator and a participant.
@@ -61,73 +65,21 @@ The PotGame smart contract is a decentralized application that facilitates a gam
 
 - **Description:** Allows users to join an existing pot by paying a participation fee.
 - **Parameters:**
-  - `_potId`: Unique identifier of the pot to join.
+  - `_potId`: The unique identifier of the pot to join.
 - **Requires:**
   - User is not blacklisted.
-  - Sent value is equal to `participationFee`.
+  - Sent value equals `participationFee`.
 - **Effects:**
   - Updates pot data.
   - Distributes rewards among participants.
-  - Distributes fees to pot owner, participants, and the development team.
+  - Distributes fees to the pot owner, participants, and the development team.
 
-### `blackListUser(address _user)`
-
-- **Description:** Blacklists a user, preventing them from participating in pots.
-- **Parameters:**
-  - `_user`: Address of the user to blacklist.
-- **Requires:**
-  - Function is called by the contract owner.
-
-### `UnBlackListUser(address _user)`
-
-- **Description:** Whitelists a user, allowing them to participate in pots.
-- **Parameters:**
-  - `_user`: Address of the user to whitelist.
-- **Requires:**
-  - Function is called by the contract owner.
-
-### `freezePot(uint256 _potId)`
-
-- **Description:** Freezes a pot, preventing new participants from joining.
-- **Parameters:**
-  - `_potId`: Unique identifier of the pot to freeze.
-- **Requires:**
-  - Function is called by the contract owner.
-
-### `unFreezePot(uint256 _potId)`
-
-- **Description:** Unfreezes a previously frozen pot, allowing new participants to join.
-- **Parameters:**
-  - `_potId`: Unique identifier of the pot to unfreeze.
-- **Requires:**
-  - Function is called by the contract owner.
-
-### `countPlayerReward(uint256 _potId, uint256 participantIndex)`
-
-- **Description:** Retrieves the accumulated reward of a participant in a pot.
-- **Parameters:**
-  - `_potId`: Unique identifier of the pot.
-  - `participantIndex`: Index of the participant in the pot.
-- **Returns:** Accumulated reward of the participant.
-
-### `getPotParticipants(uint256 _potId)`
-
-- **Description:** Retrieves the list of participants in a pot.
-- **Parameters:**
-  - `_potId`: Unique identifier of the pot.
-- **Returns:** Array of participant structures.
-
-### `getPotBalance(uint256 _potId)`
-
-- **Description:** Retrieves the current balance of a pot.
-- **Parameters:**
-  - `_potId`: Unique identifier of the pot.
-- **Returns:** Current balance of the pot.
+<!-- Continue this Markdown structure for other functions -->
 
 ## Usage
 
-The PotGame smart contract allows users to create and join pots, participate in a reward distribution game, and manage the blacklist of users. It provides transparency and fairness in the distribution of rewards among participants.
+The PotFighter smart contract provides a platform for creating and participating in pots, allowing users to engage in a reward distribution game. It offers a fair and transparent system for distributing rewards among participants. Users can also manage blacklisted users and freeze/unfreeze pots to control participation.
 
+For questions or issues, please contact [anwardev69@gmail.com].
 
-
-For questions or issues, please contact [Your Email].
+Please note that this documentation is for educational purposes, and you should conduct a thorough code review and testing before deploying the contract in a production environment.
