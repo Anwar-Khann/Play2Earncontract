@@ -130,7 +130,7 @@ The PotGame smart contract allows users to create and join pots, participate in 
 
 ## Contributors
 
-- [Your Name]
-- [Your Email]
+- [Anwar-Ul-Haq]
+- [anwardev69@gmail.com]
 
-For questions or issues, please contact [Your Email].
+For questions or issues, please contact [anwardev69@gmail.com].
