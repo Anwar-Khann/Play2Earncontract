@@ -462,4 +462,19 @@ contract PotFighter is Ownable {
         newArray[array.length] = value;
         return newArray;
     }
+
+   function allRewardClaimed(uint256 _potId) external view returns (bool) {
+        Pot storage pot = createdPots[_potId];
+        require(_potId > 0 && _potId <= potId, "Invalid Pot Id");
+
+        uint256 currentSize = pot.participants.length;
+
+        for (uint256 i = 0; i < currentSize; i++) {
+            if (!pot.participants[i].rewardCollected) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }
